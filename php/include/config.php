@@ -1,99 +1,47 @@
 <?php
 //
 
-// Configration file for Xoops Cube
+// Configration file for non Web Interface
 //												by Fumi.Iseki
 //
 //
 
-$siteurl = "";
-$sitepath = "";
-
-$helperhost = "";
-$helpername = ""; 
-$helperuser = "";
-$helperpass = "";
-
-$opensimhost = "";
-$opensimname = "";
-$opensimuser = "";
-$opensimpass = "";
-
-$currencyhost = "";
-$currencyname = "";
-$currencyuser = "";
-$currencypass = "";
-
-$currencyserver = "";
-$currencyscriptkey = "";
-$userserveruri = "";
+// Please set this hepler script URL and directory
+if (!defined('ENV_HELPER_URL'))  define('ENV_HELPER_URL',  'http://www.opensim.tuis.ac.jp/currency/helper/');
+if (!defined('ENV_HELPER_PATH')) define('ENV_HELPER_PATH', '/home/apache/htdocs/currency/helper/');
+define('SYSURL', ENV_HELPER_URL);
 
 
-$groupdb_read_key = "";
-$groupdb_write_key = "";
-
-$pg_only = "";
-$date_format = "";
-$use_utc_format = "";
-/*----------------------------------------------------------------------*/
-if (!defined('XOOPS_MODULE_URL') define('XOOPS_MODULE_URL',$siteurl);
-if (!defined('XOOPS_MODULE_PATH') define('XOOPS_MODULE_PATH',$sitepath);
-if (!defined('XOOPS_DB_HOST') define('XOOPS_DB_HOST',$helperhost);
-if (!defined('XOOPS_DB_NAME') define('XOOPS_DB_NAME',$helpername);
-if (!defined('XOOPS_DB_USER') define('XOOPS_DB_USER',$helperuser);
-if (!defined('XOOPS_DB_PASS') define('XOOPS_DB_PASS',$helperpass);
-
-if (!defined('CMS_DIR_NAME'))	 define('CMS_DIR_NAME',"");
-
-if (!defined('ENV_HELPER_URL'))  define('ENV_HELPER_URL',  XOOPS_MODULE_URL.'/helper');
-if (!defined('ENV_HELPER_PATH')) define('ENV_HELPER_PATH', XOOPS_MODULE_PATH.'/helper');
+define('CMS_DB_HOST','');
+define('CMS_DB_NAME','');
+define('CMS_DB_USER','');
+define('CMS_DB_PASS','');
+define('OPENSIM_DB_HOST','');
+define('OPENSIM_DB_NAME','');
+define('OPENSIM_DB_USER','');
+define('OPENSIM_DB_PASS','');
 
 
-//
+define('USE_CURRENCY_SERVER', 1);
+define('USER_SERVER_URI', 'http://opensim.nsl.tuis.ac.jp:8002/'); 	// not use localhost or 127.0.0.1
+
+define('MONEY_DB_HOST','');
+define('MONEY_DB_NAME','');
+define('MONEY_DB_USER','');
+define('MONEY_DB_PASS','');
+
+// Money Server Access Key
+// Please set same key with MoneyScriptAccessKey in MoneyServer.ini
+define('CURRENCY_SCRIPT_KEY', '123456789');
+
+// Group Module Access Keys
+// Please set same keys with at [Groups] section in OpenSim.ini (case of Aurora-Sim, it is Groups.ini)
+define('XMLGROUP_RKEY', '1234');	// Read Key
+define('XMLGROUP_WKEY', '1234');	// Write key
+
+define('USE_UTC_TIME',		  1);
 $GLOBALS['xmlrpc_internalencoding'] = 'UTF-8';
-
-
-
-//////////////////////////////////////////////////////////////////////////////////
-//
-// for OpenSim or Simiangrid -- unethika
-//
-
-// for OpenSim DB
-define('OPENSIM_DB_HOST',$opensimhost);
-define('OPENSIM_DB_NAME',$opensimname]);
-define('OPENSIM_DB_USER',$opensimuser);
-define('OPENSIM_DB_PASS',$opensimpass);
-
-
-define('USE_CURRENCY_SERVER',$currencyserver);
-define('CURRENCY_SCRIPT_KEY',$currencyscriptkey);
-define('USER_SERVER_URI',$userserveruri);
-
-
-
-
-//////////////////////////////////////////////////////////////////////////////////
-//
-
-// Xoops Cube 
-//
-
-// for CMS/LMS DB
-define('CMS_DB_HOST',			XOOPS_DB_HOST);
-define('CMS_DB_NAME',			XOOPS_DB_NAME);
-define('CMS_DB_USER',			XOOPS_DB_USER);
-define('CMS_DB_PASS',			XOOPS_DB_PASS);
-
-
-//
-define('SYSURL',$siteurl);
-define('OPENSIM_PG_ONLY',$pg_only);
-define('DATE_FORMAT',$date_format);
-define('USE_UTC_TIME',$use_utc_time);
-
 if (USE_UTC_TIME) date_default_timezone_set('UTC');
-
 
 //////////////////////////////////////////////////////////////////////////////////
 //
@@ -106,10 +54,10 @@ if (USE_UTC_TIME) date_default_timezone_set('UTC');
 
 // Currency DB for helpers.php
 if (USE_CURRENCY_SERVER) {
-	define('CURRENCY_DB_HOST',			$currencyhost);
-	define('CURRENCY_DB_NAME',			$currencyname);
-	define('CURRENCY_DB_USER',			$currencyuser);
-	define('CURRENCY_DB_PASS',			$currencypass);
+	define('CURRENCY_DB_HOST',			MONEY_DB_HOST);
+	define('CURRENCY_DB_NAME',			MONEY_DB_NAME);
+	define('CURRENCY_DB_USER',			MONEY_DB_USER);
+	define('CURRENCY_DB_PASS',			MONEY_DB_USER);
 	define('CURRENCY_MONEY_TBL',	 	'balances');
 	define('CURRENCY_TRANSACTION_TBL', 	'transactions');
 }
@@ -155,8 +103,7 @@ define('XMLGROUP_NOTICE_TBL',		'group_notice');
 define('XMLGROUP_ROLE_MEMBER_TBL', 	'group_rolemembership');
 define('XMLGROUP_ROLE_TBL',  		'group_role');
 
-define('XMLGROUP_RKEY',$groupdb_read_key);
-define('XMLGROUP_WKEY',$groupdb_write_key);
+
 
 
 // Avatar Profile. see also profile_config.php

@@ -7,7 +7,8 @@ This is an altered version of various nsl opensimulator modules.
 
 To configure the php folder, edit php/include/config.php.
 
-Only the empty variables at the top of the page should be edited.
+Only the empty variables at the top of the page should be edited unless you feel lucky (with the exception of obvious examples).
 
 To install the database, use php/sql/modnslmodules.sql.
 
+Use php/cron.php for an easier cron job.
