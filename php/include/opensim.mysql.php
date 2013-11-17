@@ -365,7 +365,7 @@ function  opensim_get_avatar_name($uuid, &$db=null)
 	$fullname  = null;
 
 	if ($db->exist_table('UserAccounts')) {
-		$db->query("SELECT FirstName,LastName FROM UserAccounts WHERE PrincipalID='$uuid'");
+		$db->query("SELECT FirstName,LastName FROM UserAccounts WHERE PrincipalID='".$uuid."'");
 		list($firstname, $lastname) = $db->next_record();
 	}
 	else if ($db->exist_Table('Users')) {
@@ -374,7 +374,7 @@ function  opensim_get_avatar_name($uuid, &$db=null)
 		list($firstname,$lastname) = explode(' ',$fullname);
 	}
 	else if ($db->exist_table('users')) {
-		$db->query("SELECT username,lastname FROM users WHERE UUID='$uuid'");
+		$db->query("SELECT username,lastname FROM users WHERE UUID='".$uuid."'");
 		list($firstname, $lastname) = $db->next_record();
 	}
 
@@ -407,16 +407,16 @@ function  opensim_get_avatar_uuid($name, &$db=null)
 	
 	$uuid = null;
 	if ($db->exist_table('UserAccounts')) {
-		$db->query("SELECT PrincipalID FROM UserAccounts WHERE FirstName='$firstname' and LastName='$lastname'");
+		$db->query("SELECT PrincipalID FROM UserAccounts WHERE FirstName='".$firstname."' and LastName='".$lastname."'");
 		list($uuid) = $db->next_record();
 	}
 	else if ($db->exist_table('Users')) {
 	$fullname = $firstname.' '.$lastname;
-	$db->query("SELECT ID FROM Users WHERE Name='$fullname'");
+	$db->query("SELECT ID FROM Users WHERE Name='".$fullname."'");
 		list($uuid) = $db->next_record();
 	}
 	else if ($db->exist_table('users')) {
-		$db->query("SELECT UUID FROM users WHERE username='$firstname' and lastname='$lastname'");
+		$db->query("SELECT UUID FROM users WHERE username='".$firstname."' and lastname='".$lastname."'");
 		list($uuid) = $db->next_record();
 	}
 
@@ -499,32 +499,32 @@ function  opensim_get_avatar_info($uuid, &$db=null)
 
 	if ($db->exist_table('GridUser')) {
 		$db->query('SELECT PrincipalID,FirstName,LastName,HomeRegionID,Created,Login FROM UserAccounts'.
-						" LEFT JOIN GridUser ON PrincipalID=UserID WHERE PrincipalID='$uuid'");
+						" LEFT JOIN GridUser ON PrincipalID=UserID WHERE PrincipalID='".$uuid."'");
 		list($UUID, $firstname, $lastname, $regionUUID, $created, $lastlogin) = $db->next_record();
-		$db->query("SELECT regionName,serverIP,serverHttpPort,serverURI FROM regions WHERE uuid='$regionUUID'");
+		$db->query("SELECT regionName,serverIP,serverHttpPort,serverURI FROM regions WHERE uuid='".$regionUUID."'");
 		list($regionName, $serverIP, $serverHttpPort, $serverURI) = $db->next_record();
 	}
 	else if ($db->exist_table('Users')) {
-		$db->query("SELECT ID, Name From Users WHERE ID='$uuid'";
+		$db->query("SELECT ID, Name From Users WHERE ID='".$uuid."'";
 		list($UUID,$fullname) = $db->next_record();
 		list($firstname,$lastname) = explode(' ',$fullname);
-		$db->query("SELECT Name,Address,Value FROM Scenes WHERE ID = '$regionUUID'");
+		$db->query("SELECT Name,Address,Value FROM Scenes WHERE ID = '".$regionUUID."'");
                 list($regionName,$serverURI,$value) = $db->next_record();
                 list($httpip,$portslash) = explode(":", $serveruri);
                 list($serverIP) = explode("http://",$httpip);
                 list($serverHttpPort) = explode("/",$portslash);
 				list($regionUUID) = substr($value,15,36);
-		$db->query("SELECT Value FROM UserData WHERE ID = '$uuid' AND Key=HomeLocation");
+		$db->query("SELECT Value FROM UserData WHERE ID = '".$uuid."' AND Key=HomeLocation");
 				list($valu) = $db->next_record();
 				list($rgnHandle) = substr($valu,15,36);
-		$db->query("SELECT Value FROM UserData WHERE ID = '$uuid' AND Key=CreationDate");
+		$db->query("SELECT Value FROM UserData WHERE ID = '".$uuid."' AND Key=CreationDate");
 				list($created) = $db->next_record();
 	}		
 	else if ($db->exist_table('users')) {
 		$db->query("SELECT UUID,username,lastname,homeRegion,created,lastLogin,profileAboutText,profileFirstText,profileImage,profileFirstImage,partner".
-						" FROM users WHERE uuid='$uuid'");
+						" FROM users WHERE uuid='".$uuid."'");
 		list($UUID, $firstname, $lastname, $rgnHandle, $created, $lastlogin, $profileText, $firstText, $profileImage, $firstImage, $partner) = $db->next_record();
-		$db->query("SELECT uuid,regionName,serverIP,serverHttpPort,serverURI FROM regions WHERE regionHandle='$rgnHandle'");
+		$db->query("SELECT uuid,regionName,serverIP,serverHttpPort,serverURI FROM regions WHERE regionHandle='".$rgnHandle."'");
 		list($regionUUID, $regionName, $serverIP, $serverHttpPort, $serverURI) = $db->next_record();
 	}
 	else {
@@ -604,13 +604,13 @@ function  opensim_get_avatars_infos($condition='', &$db=null)
 				$avinfos[$UUID]['firstname'] = $firstname;
 				$avinfos[$UUID]['lastname']  = $lastname;
 				
-				$sqlc = "SELECT Value FROM UserData WHERE ID=ID AND UserData.Key =CreationDate '".$condition."'";
+				$sqlc = "SELECT Value FROM UserData WHERE ID=ID AND UserData.Key=CreationDate '".$condition."'";
 				$created = db->query($sqlc);
 				
 				$avinfos[$UUID]['created']	 = $created;
 				$avinfos[$UUID]['lastlogin'] = $lastlogin;
 				
-				$sqlh = $db->query("SELECT Value FROM UserData WHERE ID=ID AND UserData.Key =HomeLocation ".$condition);
+				$sqlh = $db->query("SELECT Value FROM UserData WHERE ID=ID AND UserData.Key=HomeLocation ".$condition);
 				$hmregion = substr($sqlh,15,36);
 				
 				$avinfos[$UUID]['hmregion']  = $hmregion;
@@ -719,8 +719,8 @@ function  opensim_get_avatar_online($uuid, &$db=null)
 	*/
 
 	if ($db->exist_table('Presence')) {		// 0.7
-		$db->query("SELECT RegionID FROM Presence,GridUser WHERE Presence.UserID='$uuid'".
-					" and RegionID!='$null_region' and Presence.UserID=GridUser.UserID and GridUser.Online='True'");
+		$db->query("SELECT RegionID FROM Presence,GridUser WHERE Presence.UserID='".$uuid."'".
+					" and RegionID!='".$null_region."' and Presence.UserID=GridUser.UserID and GridUser.Online='True'");
 		if ($db->Errno==0) {
 			list($region) = $db->next_record();
 			$rgn_name = opensim_get_region_name($region);
@@ -728,7 +728,7 @@ function  opensim_get_avatar_online($uuid, &$db=null)
 		}
 	}
 	else if ($db->exist_table('GridUser')) {		// 0.7 StandAlone mode
-		$db->query("SELECT Online,LastRegionID FROM GridUser WHERE UserID='$uuid'");
+		$db->query("SELECT Online,LastRegionID FROM GridUser WHERE UserID='".$uuid."'");
 		if ($db->Errno==0) {
 			list($onln, $region) = $db->next_record();
 			if ($onln=='True') {
@@ -738,14 +738,14 @@ function  opensim_get_avatar_online($uuid, &$db=null)
 		}
 	}
 	else if ($db->exist_table('Users')) {
-		$db->query("SELECT SceneID FROM Scenes WHERE UserID='$uuid'");
+		$db->query("SELECT SceneID FROM Scenes WHERE UserID='".$uuid."'");
 		if ($db->Errno==0) {
 			list($region) = $db->next_record();
 			$rgn_name = opensim_get_region_name($region);
 			if ($rgn_name!='') $online = true;
 		}
 		else {
-			$db->query("SELECT Value FROM UserData WHERE ID='$uuid' AND UserData.Key=HomeLocation");
+			$db->query("SELECT Value FROM UserData WHERE ID='".$uuid."' AND UserData.Key=HomeLocation");
 			if($db->Errno==0) {
 			list($var) = $db->next_record();
 			list($region)substr($var,15,36);
@@ -754,7 +754,7 @@ function  opensim_get_avatar_online($uuid, &$db=null)
 		}
 	}			
 	else if ($db->exist_table('agents')) {			// 0.6.x
-		$db->query("SELECT agentOnline,currentRegion FROM agents WHERE UUID='$uuid' AND logoutTime='0'");
+		$db->query("SELECT agentOnline,currentRegion FROM agents WHERE UUID='".$uuid."' AND logoutTime='0'");
 		if ($db->Errno==0) {
 			list($onln, $region) = $db->next_record();
 			if ($onln=='1') {
@@ -784,7 +784,7 @@ function  opensim_get_avatar_flags($uuid, &$db=null)
 
 	// for 0.7
 	if ($db->exist_table('UserAccounts')) {
-		$db->query("SELECT UserFlags FROM UserAccounts WHERE PrincipalID='$uuid'");
+		$db->query("SELECT UserFlags FROM UserAccounts WHERE PrincipalID='".$uuid."'");
 		if ($db->Errno==0) {
 			list($flags) = $db->next_record();
 			return $flags;
@@ -792,7 +792,7 @@ function  opensim_get_avatar_flags($uuid, &$db=null)
 	}
 	// for SimianGrid
 	else if ($db->exist_table('Users')) {
-		$db->query("SELECT Value FROM UserData WHERE ID='$uuid' AND UserData.Key='UserFlags'");
+		$db->query("SELECT Value FROM UserData WHERE ID='".$uuid."' AND UserData.Key='UserFlags'");
 		if ($db->Errno==0) {
 			list($flags) = $db->next_record();
 			return $flags;
@@ -800,7 +800,7 @@ function  opensim_get_avatar_flags($uuid, &$db=null)
 	}
 	// for 0.6
 	else if ($db->exist_table('users')) {
-		$db->query("SELECT userFlags FROM users WHERE UUID='$uuid'");
+		$db->query("SELECT userFlags FROM users WHERE UUID='".$uuid."'");
 		if ($db->Errno==0) {
 			list($flags) = $db->next_record();
 			return $flags;
@@ -824,21 +824,21 @@ function  opensim_set_avatar_flags($uuid, $flags=0, &$db=null)
 
 	// for 0.7
 	if ($db->exist_table('UserAccounts')) {
-		$query_str = "UPDATE UserAccounts SET UserFlags='$flags' WHERE PrincipalID='$uuid'";
+		$query_str = "UPDATE UserAccounts SET UserFlags='".$flags."' WHERE PrincipalID='".$uuid."'";
 		$db->query($query_str);
 		if ($db->Errno==0) return true;
 	}
 	
 	// for SimianGrid
 	if ($db->exist_table('Users')) {
-		$query_str = "UPDATE UserData Set Value='$flags' WHERE ID='$uuid' AND UserData.Key='UserFlags'";
+		$query_str = "UPDATE UserData Set Value='".$flags."' WHERE ID='".$uuid."' AND UserData.Key='UserFlags'";
 		$db->query($query_str);
 		if ($db->Errno==0) return true;
 	}
 
 	// for 0.6
 	else if ($db->exist_table('users')) {
-		$query_str = "UPDATE users SET userFlags='$flags' WHERE UUID='$uuid'";
+		$query_str = "UPDATE users SET userFlags='".$flags."' WHERE UUID='".$uuid."'";
 		$db->query($query_str);
 		if ($db->Errno==0) return true;
 	}
@@ -865,7 +865,7 @@ function  opensim_create_avatar($UUID, $firstname, $lastname, $passwd, $homeregi
 	$passwdsalt = make_random_hash();
 	$passwdhash = md5(md5($passwd).":".$passwdsalt);
 
-	$db->query("SELECT uuid,regionHandle FROM regions WHERE regionName='$homeregion'");
+	$db->query("SELECT uuid,regionHandle FROM regions WHERE regionName='".$homeregion."'");
 	$errno = $db->Errno;
 	if ($errno==0) {
 		list($regionID,$regionHandle) = $db->next_record();
@@ -1019,11 +1019,11 @@ function  opensim_get_region_uuid($name, &$db=null)
 	$uuid = '';
 	if ($name!='') {
 		if($OpenSimVersion == SIMIANGRID) {
-		$db->query("SELECT ID FROM regions WHERE Name='$name'");
+		$db->query("SELECT ID FROM regions WHERE Name='".$name."'");
 		list($uuid) = $db->next_record();
 		}
 		else {
-		$db->query("SELECT uuid FROM regions WHERE regionName='$name'");
+		$db->query("SELECT uuid FROM regions WHERE regionName='".$name."'");
 		list($uuid) = $db->next_record();
 		}
 	}
@@ -1043,15 +1043,15 @@ function  opensim_get_region_name($id, &$db=null)
 	if ($OpenSimVersion==null) opensim_get_db_version($db);
 	
 	if ($OpenSimVersion == SIMIANGRID) {
-		$db->query("SELECT Name FROM Scenes WHERE ID='$id'");
+		$db->query("SELECT Name FROM Scenes WHERE ID='".$id."'");
 		list($regionName) = $db->next_record();
 	}
 	else if (isGUID($id)) {
-		$db->query("SELECT regionName FROM regions WHERE uuid='$id'");
+		$db->query("SELECT regionName FROM regions WHERE uuid='".$id."'");
 		list($regionName) = $db->next_record();
 	}
 	else {
-		$db->query("SELECT regionName FROM regions WHERE regionHandle='$id'");
+		$db->query("SELECT regionName FROM regions WHERE regionHandle='".$id."'");
 		list($regionName) = $db->next_record();
 	}
 
@@ -1098,14 +1098,14 @@ function  opensim_get_region_info($region, &$db=null)
 	if ($OpenSimVersion==null) opensim_get_db_version($db);
 
 	if ($OpenSimVersion == SIMIANGRID){
-                  $sql = "SELECT Name,MinX,MinY FROM Scenes WHERE ID='$region'";
+                  $sql = "SELECT Name,MinX,MinY FROM Scenes WHERE ID='".$region."'";
         $db->query($sql);
                 list($regionName,$locX,$locY) = $db->next_record();
                 list($regionHandle) = ($locX*65536)+$locY;
                 list($locX) = $locX/256;
                 list($locY) = $locY/256;
 
-                $db->query("SELECT Address,ExtraData FROM Scenes WHERE ID = '$region'");
+                $db->query("SELECT Address,ExtraData FROM Scenes WHERE ID = '".$region."'");
                 list($serverURI,$extradata) = $db->next_record();
                 list($httpip,$portslash) = explode(":", $serveruri);
                 list($serverIP) = explode("http://",$httpip);
@@ -1114,7 +1114,7 @@ function  opensim_get_region_info($region, &$db=null)
                                 list($regionSecret) = substr($extradatab,0,36);
                 }
                 else {
-        $sql = "SELECT regionHandle,regionName,regionSecret,serverIP,serverHttpPort,serverURI,locX,locY FROM regions WHERE uuid='$region'";
+        $sql = "SELECT regionHandle,regionName,regionSecret,serverIP,serverHttpPort,serverURI,locX,locY FROM regions WHERE uuid='".$region."'";
         $db->query($sql);
 
         list($regionHandle, $regionName, $regionSecret, $serverIP, $serverHttpPort, $serverURI, $locX, $locY) = $db->next_record();
@@ -1281,17 +1281,17 @@ function  opensim_get_home_region($uuid, &$db=null)
 
 	$region_name = '';
 	if ($db->exist_table('GridUser')) {
-		$db->query("SELECT regionName FROM GridUser,regions WHERE HomeRegionID=uuid AND UserID='$uuid'");
+		$db->query("SELECT regionName FROM GridUser,regions WHERE HomeRegionID=uuid AND UserID='".$uuid."'");
 		list($region_name) = $db->next_record();
 	}
 	if ($db->exist_table('Users')) {
 		$db->query("SELECT Value FROM UserData WHERE ID='$uuid' AND Key=HomeLocation");
 		list($homeuuid) = $db->next_record();
-		$db->query("SELECT Name FROM Scenes WHERE ID='$homeuuid'");
+		$db->query("SELECT Name FROM Scenes WHERE ID='".$homeuuid."'");
 		list($region_name) = $db->next_record();
 	}
 	else if ($db->exist_table('users')) {
-		$db->query("SELECT regionName FROM users,regions WHERE homeRegionID=regions.uuid AND users.UUID='$uuid'");
+		$db->query("SELECT regionName FROM users,regions WHERE homeRegionID=regions.uuid AND users.UUID='".$uuid."'");
 		list($region_name) = $db->next_record();
 	}
 
@@ -1317,14 +1317,14 @@ function  opensim_set_home_region($uuid, $hmregion, $pos_x='128', $pos_y='128', 
 		list($regionID, $regionHandle) = $db->next_record();
 
 		if ($db->exist_table('GridUser')) {
-			$homePosition = "<$pos_x,$pos_y,$pos_z>";
-			$db->query("UPDATE GridUser SET HomeRegionID='$regionID',HomePosition='$homePosition' WHERE UserID='$uuid'");
+			$homePosition = "<'".$pos_x."','".$pos_y."','".$pos_z."'>";
+			$db->query("UPDATE GridUser SET HomeRegionID='".$regionID."',HomePosition='".$homePosition."' WHERE UserID='".$uuid."'");
 			$errno = $db->Errno;
 		}
 
 		if ($db->exist_table('users') and $errno==0) {
-			$homePosition = "homeLocationX='$pos_x',homeLocationY='$pos_y',homeLocationZ='$pos_z' ";
-			$db->query("UPDATE users SET homeRegion='$regionHandle',homeRegionID='$regionID',$homePosition WHERE UUID='$uuid'");
+			$homePosition = "homeLocationX='".$pos_x."',homeLocationY='".$pos_y."',homeLocationZ='".$pos_z."' ";
+			$db->query("UPDATE users SET homeRegion='".$regionHandle."',homeRegionID='".$regionID."','".$homePosition."' WHERE UUID='".$uuid."'");
 			if ($db->Errno!=0) {
 				if (!$db->exist_table('auth')) $errno = 99;
 			}
@@ -1363,7 +1363,7 @@ function  opensim_get_estate_owner($region, &$db=null)
         if ($db->exist_table('UserAccounts')) {
                 $rqdt = 'PrincipalID,FirstName,LastName';
                 $tbls = 'UserAccounts,estate_map,estate_settings';
-                $cndn = "RegionID='$region' AND estate_map.EstateID=estate_settings.EstateID AND EstateOwner=PrincipalID";
+                $cndn = "RegionID='".$region."' AND estate_map.EstateID=estate_settings.EstateID AND EstateOwner=PrincipalID";
 				
 				$db->query('SELECT '.$rqdt.' FROM '.$tbls.' WHERE '.$cndn);
 			list($owneruuid, $firstname, $lastname) = $db->next_record();
@@ -1383,7 +1383,7 @@ function  opensim_get_estate_owner($region, &$db=null)
         else if ($db->exist_table('users')) {
                 $rqdt = 'UUID,username,lastname';
                 $tbls = 'users,estate_map,estate_settings';
-                $cndn = "RegionID='$region' AND estate_map.EstateID=estate_settings.EstateID AND EstateOwner=UUID";
+                $cndn = "RegionID='".$region."' AND estate_map.EstateID=estate_settings.EstateID AND EstateOwner=UUID";
 				
 				$db->query('SELECT '.$rqdt.' FROM '.$tbls.' WHERE '.$cndn);
 				list($owneruuid, $firstname, $lastname) = $db->next_record();
@@ -1418,13 +1418,13 @@ function  opensim_set_estate_owner($region, $owner, &$db=null)
 	if ($OpenSimVersion==null) opensim_get_db_version($db);
 	
 	if ($OpenSimVersion == SIMIANGRID) {
-		$db->query("SELECT ExtraData from Scenes WHERE ID='$region'");
+		$db->query("SELECT ExtraData from Scenes WHERE ID='".$region."'");
 		list($va) = db->next_record();
 		list($pattern) = substr($va,-38,36);
 		list($v) = preg_replace($pattern,$owner,$va);
 		$errno = $db->Errno;
 		if ($errno==0) {
-		$db->query("UPDATE ExtraData SET ExtraData='$v' WHERE ID='$region'");
+		$db->query("UPDATE ExtraData SET ExtraData='".$v."' WHERE ID='".$region."'");
 		return true;
 		}
 		else {
@@ -1432,10 +1432,10 @@ function  opensim_set_estate_owner($region, $owner, &$db=null)
 		}
 	}
 	else {
-		$db->query("UPDATE estate_settings,estate_map SET EstateOwner='$owner' WHERE estate_settings.EstateID=estate_map.EstateID AND RegionID='$region'");
+		$db->query("UPDATE estate_settings,estate_map SET EstateOwner='".$owner."' WHERE estate_settings.EstateID=estate_map.EstateID AND RegionID='".$region."'");
 		$errno = $db->Errno;
 
-		if ($errno==0) $db->query("UPDATE regions SET owner_uuid='$owner' WHERE uuid='$region'");
+		if ($errno==0) $db->query("UPDATE regions SET owner_uuid='".$owner."' WHERE uuid='".$region."'");
 
 		if ($errno!=0) return false;
 		return true;
@@ -1465,7 +1465,7 @@ function  opensim_get_parcel_name($parcel, &$db=null)
 	
 	}
 	
-	$db->query("SELECT name FROM land WHERE UUID='$parcel'");
+	$db->query("SELECT name FROM land WHERE UUID='".$parcel."'");
 
 	if ($db->Errno==0) list($name) = $db->next_record();
 
@@ -1517,7 +1517,7 @@ function  opensim_get_asset_data($uuid, &$db=null)
 
 	$asset = array();
 
-	$db->query("SELECT name,description,assetType,data,asset_flags,CreatorID FROM assets WHERE id='$uuid'");
+	$db->query("SELECT name,description,assetType,data,asset_flags,CreatorID FROM assets WHERE id='".$uuid."'");
 	list($name, $desc, $type, $data, $flag, $creator) = $db->next_record();
 
 	$asset['UUID'] 	  = $uuid;
@@ -1705,7 +1705,7 @@ function  opensim_create_avatar_wear_dup($touuid, $fromid, $invent, &$db=null)
 	if (!is_object($db)) $db = opensim_new_db();
 	if (!$db->exist_table('Avatars')) return false;
 
-	$db->query("SELECT * FROM Avatars WHERE PrincipalID='$fromid'");
+	$db->query("SELECT * FROM Avatars WHERE PrincipalID='".$fromid."'");
 	$errno = $db->Errno;
 
 	if ($errno==0) {
@@ -1726,7 +1726,7 @@ function  opensim_create_avatar_wear_dup($touuid, $fromid, $invent, &$db=null)
 			$Name  = addslashes($Name);
 			$Value = addslashes($Value);
 			//
-			$db2->query("INSERT INTO Avatars (PrincipalID,Name,Value) VALUES ('$touuid','$Name','$Value')");
+			$db2->query("INSERT INTO Avatars (PrincipalID,Name,Value) VALUES ('".$touuid."','".$Name."','".$Value."')");
 		}
 	}
 
@@ -1746,7 +1746,7 @@ function  opensim_create_inventory_items_dup($touuid, $fromid, $folder, &$db=nul
 	if (!$folder or !is_array($folder)) return $invent;
 	if (!is_object($db)) $db = opensim_new_db();
 
-	$db->query("SELECT * FROM inventoryitems WHERE avatarID='$fromid'");
+	$db->query("SELECT * FROM inventoryitems WHERE avatarID='".$fromid."'");
 	$errno = $db->Errno;
 
 	if ($errno==0) {
@@ -1791,7 +1791,7 @@ function  opensim_create_inventory_folders_dup($touuid, $fromid, &$db=null)
 	$folder = array();
 	if (!isGUID($fromid)) return $folder;
 
-	$db->query("SELECT * FROM inventoryfolders WHERE agentID='$fromid'");
+	$db->query("SELECT * FROM inventoryfolders WHERE agentID='".$fromid."'");
 	$errno = $db->Errno;
 
 	if ($errno==0) {
@@ -1818,7 +1818,7 @@ function  opensim_create_inventory_folders_dup($touuid, $fromid, &$db=null)
 			$folderID   = $fld->folderID;
 			//
 			$db->query("INSERT INTO inventoryfolders (folderName,type,version,folderID,agentID,parentFolderID) ".
-					   		"VALUES ('$folderName','$folderType','$version','$folderID','$touuid','$parent')");
+					   		"VALUES ('".$folderName."','".$folderType."','".$version."','".$folderID."','".$touuid."','".$parent."')");
 		}
 	}
 
@@ -2113,7 +2113,7 @@ function  opensim_succession_agents_to_griduser($region_id, &$db=null)
 	if ($errno==0) {
 		$db2 = opensim_new_db();
 		while(list($UUID,$currentRegion,$login,$logout,$homeHandle,$locX,$locY,$locZ) = $db->next_record()) {
-			$db2->query("SELECT uuid FROM regions WHERE regionHandle='$homeHandle'");
+			$db2->query("SELECT uuid FROM regions WHERE regionHandle='".$homeHandle."'");
 			list($homeRegion) = $db2->next_record();
 			if ($homeRegion==null) {
 				$homeRegion = $region_id;
@@ -2122,22 +2122,22 @@ function  opensim_succession_agents_to_griduser($region_id, &$db=null)
 				$locZ = '20';
 			}
 
-			$db2->query("SELECT UserID,HomeRegionID FROM GridUser WHERE UserID='$UUID'");
+			$db2->query("SELECT UserID,HomeRegionID FROM GridUser WHERE UserID='".$UUID."'");
 			list($userid, $hmregion) = $db2->next_record();
 
 			if ($userid==null) {
 				if ($login!=0 and $logout<$login) $logout = $login;
 
 				$db2->query('INSERT INTO GridUser (UserID,HomeRegionID,HomePosition,HomeLookAt,LastRegionID,LastPosition,LastLookAt,Online,Login,Logout) '.
-							"VALUES ('$UUID','$homeRegion','<$locX,$locY,$locZ>','<0,0,0>','$currentRegion','<128,128,0>','<0,0,0>','False','$login','$logout')");
+							"VALUES ('".$UUID."','".$homeRegion."','<'".$locX."','".$locY."','".$locZ."'>','<0,0,0>','".$currentRegion."','<128,128,0>','<0,0,0>','False','".$login."','".$logout."')");
 				$errno =$db2->Errno;
 
 				if ($errno!=0) {
-					$db->query("DELETE FROM GridUser WHERE UserID='$UUID'");
+					$db->query("DELETE FROM GridUser WHERE UserID='".$UUID."'");
 				}
 			}
 			else if ($hmregion=='00000000-0000-0000-0000-000000000000' or $hmregion==null) {
-				$db2->query("UPDATE GridUser SET HomeRegionID='$homeRegion',HomePosition='<$locX,$locY,$locZ>' WHERE UserID='$UUID'");
+				$db2->query("UPDATE GridUser SET HomeRegionID='".$homeRegion."',HomePosition='<'".$locX."','".$locY."','".$locZ."'>' WHERE UserID='".$UUID."'");
 			}
 		}
 	}
@@ -2164,20 +2164,20 @@ function  opensim_succession_useraccounts_to_griduser($region_id, &$db=null)
 	if ($errno==0) {
 		$db2 = opensim_new_db();
 		while(list($UUID) = $db->next_record()) {
-			$db2->query("SELECT UserID,HomeRegionID FROM GridUser WHERE UserID='$UUID'");
+			$db2->query("SELECT UserID,HomeRegionID FROM GridUser WHERE UserID='".$UUID."'");
 			list($userid, $hmregion) = $db2->next_record();
 
 			if ($userid==null) {
 				$db2->query('INSERT INTO GridUser (UserID,HomeRegionID,HomePosition,HomeLookAt,LastRegionID,LastPosition,LastLookAt,Online,Login,Logout) '.
-							"VALUES ('$UUID','$homeRegion','<128,128,0>','<0,0,0>','$homeRegion','<128,128,0>','<0,0,0>','False','0','0')");
+							"VALUES ('".$UUID."','".$homeRegion."','<128,128,0>','<0,0,0>','".$homeRegion."','<128,128,0>','<0,0,0>','False','0','0')");
 				$errno =$db2->Errno;
 
 				if ($errno!=0) {
-					$db->query("DELETE FROM GridUser WHERE UserID='$UUID'");
+					$db->query("DELETE FROM GridUser WHERE UserID='".$UUID."'");
 				}
 			}
 			else if ($hmregion=='00000000-0000-0000-0000-000000000000' or $hmregion==null) {
-				$db2->query("UPDATE GridUser SET HomeRegionID='$homeRegion',HomePosition='<128,128,0>' WHERE UserID='$UUID'");
+				$db2->query("UPDATE GridUser SET HomeRegionID='".$homeRegion."',HomePosition='<128,128,0>' WHERE UserID='".$UUID."'");
 			}
 		}
 	}
@@ -2265,7 +2265,7 @@ function  opensim_get_voice_mode($region, &$db=null)
 
 	$voiceflag = 0x60000000;
 
-	$db->query("SELECT LandFlags FROM land WHERE RegionUUID='$region'");
+	$db->query("SELECT LandFlags FROM land WHERE RegionUUID='".$region."'");
 	while (list($flag) = $db->next_record()) {
 		$voiceflag &= $flag;
 	}
@@ -2290,7 +2290,7 @@ function  opensim_set_voice_mode($region, $mode, &$db=null)
 	$colum  = 0;
 	$vflags = array();
 
-	$db->query("SELECT UUID,LandFlags FROM land WHERE RegionUUID='$region'");
+	$db->query("SELECT UUID,LandFlags FROM land WHERE RegionUUID='".$region."'");
 	while (list($UUID, $flag) = $db->next_record()) {
 		$flag &= 0x9fffffff;
 		if ($mode==1)	  $flag |= 0x20000000;
@@ -2304,7 +2304,7 @@ function  opensim_set_voice_mode($region, $mode, &$db=null)
 	foreach($vflags as $vflag) {
 		$UUID = $vflag['UUID'];
 		$flag = $vflag['flag'];
-		$db->query("UPDATE land SET LandFlags='$flag' WHERE UUID='$UUID'");
+		$db->query("UPDATE land SET LandFlags='".$flag."' WHERE UUID='".$UUID."'");
 	}
 
 	return true;
@@ -2466,10 +2466,10 @@ function  opensim_get_server_info($userid, &$db=null)
 	}
 	else if ($OpenSimVersion==SIMIANGRID) {
 
-                $db->query("SELECT SceneID FROM Sessions WHERE UserID = '$userid.'");
+                $db->query("SELECT SceneID FROM Sessions WHERE UserID = '".$userid."'");
                 list($sceneid) = $db->next_record();
 
-                $db->query("SELECT Address,ExtraData FROM Scenes WHERE ID = '$sceneid'");
+                $db->query("SELECT Address,ExtraData FROM Scenes WHERE ID = '".$sceneid."'");
                 list($serveruri,$extradata) = $db->next_record();
                 list($httpip,$portslash) = explode(":", $serveruri);
                 list($serverip) = explode("http://",$httpip);
@@ -2618,7 +2618,7 @@ function  opensim_check_region_secret($uuid, $secret, &$db=null)
 				
 				$ExtraData = strstr($ExtraData,$db->escape($secret));
 				
-				$sql = "SELECT ID FROM Scenes WHERE ID='".$uuid."' AND regionSecret=$ExtraData";
+				$sql = "SELECT ID FROM Scenes WHERE ID='".$uuid."' AND regionSecret='".$ExtraData."'";
 
                 $db->query($sql);
                 if ($db->Errno==0) {
