@@ -73,11 +73,12 @@ function get_currency_quote($method_name, $params, $app_data)
 {
 	$req	   = $params[0];
 	$agentid   = $req['agentId'];
+	$regionid  = $req['regionId'];
 	$sessionid = $req['secureSessionId'];
 	$amount	   = $req['currencyBuy'];
 	$ipAddress = $_SERVER['REMOTE_ADDR'];
 
-	$ret = opensim_check_secure_session($agentid, null, $sessionid);
+	$ret = opensim_check_secure_session($agentid, $regionid, $sessionid);
 
 	if ($ret) {
 		$confirmvalue = get_confirm_value($ipAddress);
@@ -110,6 +111,7 @@ function buy_currency($method_name, $params, $app_data)
 {
 	$req	   = $params[0];
 	$agentid   = $req['agentId'];
+	$regionid  = $req['regionId'];
 	$sessionid = $req['secureSessionId'];
 	$amount	   = $req['currencyBuy'];
 	$confim	   = $req['confirm'];
@@ -125,7 +127,7 @@ function buy_currency($method_name, $params, $app_data)
 		return "";
 	}
 
-	$checkSecure = opensim_check_secure_session($agentid, null, $sessionid);
+	$checkSecure = opensim_check_secure_session($agentid, $regionid, $sessionid);
 	if (!$checkSecure) {
 		$response_xml = xmlrpc_encode(array('success'	  => False,
 											'errorMessage'=> "\n\nMissmatch Secure Session ID!!",
@@ -275,6 +277,7 @@ function claimUser_func($method_name, $params, $app_data)
 {
 	$req	   = $params[0];
 	$agentid   = $req['agentId'];
+	$regionid  = $req['regionId'];
 	$sessionid = $req['secureSessionId'];
 	$regionid  = $req['regionId'];
 	$secret	   = $req['secret'];
@@ -282,7 +285,7 @@ function claimUser_func($method_name, $params, $app_data)
 	$ret = opensim_check_region_secret($regionid, $secret);
 
 	if ($ret) {
-		$ret = opensim_check_secure_session($agentid, null, $sessionid);
+		$ret = opensim_check_secure_session($agentid, $regionid, $sessionid);
 
 		if ($ret) {
 			$ret = opensim_set_current_region($agentid, $regionid);

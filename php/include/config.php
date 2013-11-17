@@ -39,6 +39,8 @@ define('CURRENCY_SCRIPT_KEY', '123456789');
 define('XMLGROUP_RKEY', '1234');	// Read Key
 define('XMLGROUP_WKEY', '1234');	// Write key
 
+define('OPENSIM_PG_ONLY', '1');
+
 define('USE_UTC_TIME',		  1);
 $GLOBALS['xmlrpc_internalencoding'] = 'UTF-8';
 if (USE_UTC_TIME) date_default_timezone_set('UTC');
