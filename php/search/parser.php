@@ -3,10 +3,10 @@
 // Modified by Fumi.Iseki for XoopenSim/Modlos
 //
 
-//require_once('./search_config.php');
-if (defined('ENV_READED_INTERFACE')) require_once(ENV_HELPER_PATH.'/search_config.php');	// for command line
-else 							  	 require_once('./search_config.php');
-
+require_once('search_config.php');
+/*if (defined('ENV_READED_INTERFACE')) require_once('search_config.php');	// for command line
+else 							  	 require_once(ENV_HELPER_PATH.'/search_config.php');
+*/
 
 // for Debug
 //$request_xml = $HTTP_RAW_POST_DATA;

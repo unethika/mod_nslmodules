@@ -9,8 +9,8 @@
 //
 
 //
-require_once(ENV_HELPER_PATH.'/../include/opensim.mysql.php');
-
+require_once("../include/config.php");
+require_once("../include/opensim.mysql.php");
 
 
 $display_marker = 'dr';	// infomation marker

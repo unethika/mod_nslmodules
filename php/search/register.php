@@ -13,7 +13,7 @@
 // Modified by Fumi.Iseki for XoopenSim/Modlos
 //
 
-require_once('./search_config.php');
+require_once('search_config.php');
 
 //
 /*

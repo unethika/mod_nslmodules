@@ -7,7 +7,7 @@
 // Modified by Fumi.Iseki for XoopenSim/Modlos
 //
 
-require_once('./search_config.php');
+require_once('search_config.php');
 
 
 // for Debug
@@ -103,9 +103,11 @@ function dir_places_query($method_name, $params, $app_data)
 	global $DbLink;
 
 	$req		 = $params[0];
-	$flags		 = $req['flags'];
+	
 	$text		 = $req['text'];
+	$flags		 = $req['flags'];
 	$category	 = $req['category'];
+	$sim_name	 = $req['sim_name'];
 	$query_start = $req['query_start'];
 
 	//$pieces = explode(" ", $text);
@@ -670,3 +672,4 @@ xmlrpc_server_call_method($xmlrpc_server, $request_xml, '');
 xmlrpc_server_destroy($xmlrpc_server);
 
 ?>
+

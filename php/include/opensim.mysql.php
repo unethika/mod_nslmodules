@@ -133,8 +133,8 @@ define('DEFAULT_AVATAR_PARAMS', '33,61,85,23,58,127,63,85,63,42,0,85,63,36,85,95
 // Load Function
 //
 
-require_once(ENV_HELPER_PATH.'/../include/tools.func.php');
-require_once(ENV_HELPER_PATH.'/../include/mysql.func.php');
+require_once('tools.func.php');
+require_once('mysql.func.php');
 
 
 
@@ -226,7 +226,7 @@ function  opensim_users_count_records(&$db=null)
 	if ($OpenSimVersion==null) opensim_get_db_version($db);
 
 	if ($db->exist_table('GridUser')) 	$table = 'GridUser';
-	else if (db->exist_table('Users'))	$table = 'Users';
+	else if ($db->exist_table('Users'))	$table = 'Users';
 	else if ($db->exist_table('users')) $table = 'users';
 	else return 0;
 
@@ -335,8 +335,9 @@ function  opensim_get_avatars_num(&$db=null)
 		list($num) = $db->next_record();
 	}
 	else if ($db->exist_table('Users')) {
-		$db->query->('SELECT COUNT(*) FROM Users');
-		list($num) = $db->next_record();	
+		$db->query('SELECT COUNT(*) FROM Users');
+		list($num) = $db->next_record();
+	}	
 	else if ($db->exist_table('users')) {
 		$db->query('SELECT COUNT(*) FROM users');
 		list($num) = $db->next_record();
@@ -505,12 +506,12 @@ function  opensim_get_avatar_info($uuid, &$db=null)
 		list($regionName, $serverIP, $serverHttpPort, $serverURI) = $db->next_record();
 	}
 	else if ($db->exist_table('Users')) {
-		$db->query("SELECT ID, Name From Users WHERE ID='".$uuid."'";
+		$db->query("SELECT ID, Name From Users WHERE ID='".$uuid."'");
 		list($UUID,$fullname) = $db->next_record();
 		list($firstname,$lastname) = explode(' ',$fullname);
 		$db->query("SELECT Name,Address,Value FROM Scenes WHERE ID = '".$regionUUID."'");
                 list($regionName,$serverURI,$value) = $db->next_record();
-                list($httpip,$portslash) = explode(":", $serveruri);
+                list($httpip,$portslash) = explode(":", $serverURI);
                 list($serverIP) = explode("http://",$httpip);
                 list($serverHttpPort) = explode("/",$portslash);
 				list($regionUUID) = substr($value,15,36);
@@ -605,7 +606,7 @@ function  opensim_get_avatars_infos($condition='', &$db=null)
 				$avinfos[$UUID]['lastname']  = $lastname;
 				
 				$sqlc = "SELECT Value FROM UserData WHERE ID=ID AND UserData.Key=CreationDate '".$condition."'";
-				$created = db->query($sqlc);
+				$created = $db->query($sqlc);
 				
 				$avinfos[$UUID]['created']	 = $created;
 				$avinfos[$UUID]['lastlogin'] = $lastlogin;
@@ -748,7 +749,7 @@ function  opensim_get_avatar_online($uuid, &$db=null)
 			$db->query("SELECT Value FROM UserData WHERE ID='".$uuid."' AND UserData.Key=HomeLocation");
 			if($db->Errno==0) {
 			list($var) = $db->next_record();
-			list($region)substr($var,15,36);
+			list($region) = substr($var,15,36);
 			$rgn_name = opensim_get_region_name($region);
 			}
 		}
@@ -1072,9 +1073,12 @@ function  opensim_get_regions_names($condition='', &$db=null)
 
 	$regions = array();
 	if ($OpenSimVersion == SIMIANGRID) {
-	$db->query("SELECT Name FROM Scenes ".$condition);
-	while ($db->Errno==0 and list($region)=$db->next_record()) {
-		$regions[] = $region;
+		$db->query("SELECT Name FROM Scenes ".$condition);
+		if ($db->Errno==0) {
+			while ($db->Errno==0 and list($region)=$db->next_record()) {
+				$regions[] = $region;
+			}
+		}
 	}
 	else {
 		$db->query("SELECT regionName FROM regions ".$condition);
@@ -1419,7 +1423,7 @@ function  opensim_set_estate_owner($region, $owner, &$db=null)
 	
 	if ($OpenSimVersion == SIMIANGRID) {
 		$db->query("SELECT ExtraData from Scenes WHERE ID='".$region."'");
-		list($va) = db->next_record();
+		list($va) = $db->next_record();
 		list($pattern) = substr($va,-38,36);
 		list($v) = preg_replace($pattern,$owner,$va);
 		$errno = $db->Errno;

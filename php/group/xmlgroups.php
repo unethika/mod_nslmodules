@@ -3,7 +3,7 @@
 // by Fumi.Iseki '09 5/31
 //
 
-require_once(xmlgroups_config.php);
+require_once("xmlgroups_config.php");
 
 
 //$debugXMLRPC = 0;
@@ -13,5 +13,5 @@ require_once(xmlgroups_config.php);
 //error_log('xmlgroups.php: '.$request_xml);
 
 
-include(xmlrpc.php);
+include("xmlrpc.php");
 
